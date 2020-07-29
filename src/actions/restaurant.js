@@ -1,6 +1,5 @@
 import { setError } from "./error";
-
- const API_KEY =`${process.env.REACT_APP_ZOMATO_API_KEY}`;
+import { loading } from './city';
 
 function handleErrors(response) {
     if (!response.ok) {
@@ -14,31 +13,21 @@ export const fetchRestaurants=(restaurant) =>({
     restaurant
 })
 
-export const thunkRestaurants =(city='', start=1) =>{
+export const thunkRestaurants =(city='') =>{
     return (dispatch, getState) =>{
        
         fetch(`http://opentable.herokuapp.com/api/restaurants?city=${city}`)
         .then(handleErrors)
         .then(res => res.json())
-        .then((data) =>{
-            console.log(data.restaurants);
-             data.restaurants.forEach((restaurant) =>{
-                  const name = restaurant.name;
-                   fetch(`http://opentable.herokuapp.com/api/restaurants?name=${name}`)
-                   .then(handleErrors)
-                    .then(res => res.json())
-                    .then((review) =>{
-                        //reviews
-                        const restaurantObj = {
-                            ...restaurant
-                         }
-                        dispatch(fetchRestaurants(restaurantObj));
-                    })
-                     .catch((error)=>{
-                        dispatch(setError('problem in accessing reviews through API. '+error));
-                    })
-                 })
-
+            .then((data) =>{
+                console.log(data.restaurants);
+                dispatch(loading(false));
+                if( data.restaurants.length ) {
+                    dispatch(fetchRestaurants(data.restaurants));
+                }
+                else {
+                    dispatch(setError('No Restaurant for current City!!!'));
+                }
             })
             .catch((error)=>{
                 dispatch(setError('problem in accessing restaurant list through API. '+error));

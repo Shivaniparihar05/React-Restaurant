@@ -1,8 +1,9 @@
 const defaultState={
     city:'', 
     restaurants:[],
-    likes: [],//likes will store list of res_id restaurant ids
-    error: ''
+    filteredRestaurants: [], // backup restaurant list for searching
+    error: '',
+    loading: false
 };
 
 export const restaurantReducer = (state = defaultState, action) =>{
@@ -18,41 +19,26 @@ export const restaurantReducer = (state = defaultState, action) =>{
         case 'FETCH_RESTAURANTS':
             return {
                 ...state,
-                restaurants:  [...state.restaurants , action.restaurant ]
+                restaurants:  [...state.restaurants , ...action.restaurant ],
+                filteredRestaurants: [...state.restaurants , ...action.restaurant ]
             }
-
-        case 'SET_LIKE':
-            let likesArr=[];
-            if(!action.like){//not present --at the time of page load
-                likesArr= JSON.parse(localStorage.getItem('likes'));
-            }
-            else{
-                if(state.likes){
-                    likesArr=[...state.likes, action.like];
-                }
-                else{
-                    likesArr=[ action.like];
-                }
-                localStorage.setItem('likes', JSON.stringify(likesArr));
-            }
+        case 'SET_LOADING':
             return {
                 ...state,
-                likes: likesArr
+                loading: action.loading
             }
-            
-        
-        case 'UNSET_LIKE':
-            const likesUpdated = state.likes.filter((like) =>{
-                                    return like!==action.like;
-                                });
-
-            localStorage.setItem('likes',JSON.stringify(likesUpdated))
-
+        case 'FILTER_RESTAURANTS':
+            const key = action.filter;
+            let filteredList = state.filteredRestaurants;
+            if (key.length) {
+                filteredList = state.filteredRestaurants.filter(res => res.city.includes(key) || res.area.includes(key) || res.address.includes(key))
+            }
+            console.log("filter ==>", key.length)
+            console.log("filteredRestaurants ==>", filteredList)
             return {
                 ...state,
-                likes: likesUpdated
+                restaurants: filteredList
             }
-
         case 'SET_ERROR':
             return {
                 ...state,
