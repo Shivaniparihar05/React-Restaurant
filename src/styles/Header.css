@@ -1,0 +1,23 @@
+.App-name{
+    background-color:rgb(221, 189, 189);
+    padding: 1em;
+    text-align: center;
+    font-size: 1.6em;
+    color: #0c0c0c;
+    border-bottom: 1px solid darkgrey;
+    font-family: 'Sacramento', cursive;
+    display : flex;
+    justify-content: center;
+}
+
+.black{
+    color: black;
+}
+
+.App-title__link{
+    text-decoration: none;
+    color:#060706;
+    font-size: 35px ;
+    display: center;
+    
+}
